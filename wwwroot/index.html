@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Voice recognition demo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>
+    <div class="container">
+        <textarea id="text" rows="10" cols="50"></textarea><br/>
+        <button id="recordBtn">Hold to record</button>
+    </div>
+<script>
+const btn = document.getElementById('recordBtn');
+const textArea = document.getElementById('text');
+let mediaRecorder;
+let audioChunks = [];
+
+btn.onmousedown = async () => {
+    textArea.value = '';
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.start();
+};
+
+btn.onmouseup = async () => {
+    mediaRecorder.stop();
+    mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+
+        const response = await fetch('/api/recognize', {
+            method: 'POST',
+            body: base64Audio,
+            headers: { 'Content-Type': 'text/plain' }
+        });
+
+        const result = await response.text();
+        textArea.value = JSON.parse(result).toString();
+    };
+};
+</script>
+</body>
+</html>
