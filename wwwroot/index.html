@@ -4,12 +4,33 @@
 <meta charset="UTF-8" />
 <title>Voice recognition demo</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .centered {
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 150px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <textarea id="text" rows="10" cols="50"></textarea><br/>
-        <button id="recordBtn">Hold to record</button>
-    </div>
+  <div class="container centered">
+    <textarea id="text" rows="6"></textarea><br/>
+    <button id="recordBtn">Hold to record</button>
+  </div>
 <script>
 const btn = document.getElementById('recordBtn');
 const textArea = document.getElementById('text');
